@@ -5,6 +5,24 @@ include 'koneksi.php';
 
 if (isset($_POST['submit'])) {
 
+	// solusi menggunakan prepare statement
+	$login = mysqli_prepare($conn, "SELECT * FROM user WHERE username = ? AND password = ?");
+	mysqli_stmt_bind_param($login, "ss",$_POST['username'],$_POST['password']);
+	mysqli_execute($login);
+	mysqli_stmt_store_result($login);
+
+	if (mysqli_stmt_num_rows($login) == 0) {
+		die("Username atau password salah!");
+	} else {
+		$_SESSION['admin'] = 1;
+		header("Location: admin.php");
+	}
+
+	// solusi menggunakan escape
+	// $username = mysqli_real_escape_string($conn,$_POST['username']);
+	// $password = mysqli_real_escape_string($conn,$_POST['password']);
+
+	// kondisi awal
 	// $username = $_POST['username'];
 	// $password = $_POST['password'];
 
@@ -17,36 +35,6 @@ if (isset($_POST['submit'])) {
 	// 	header("Location: admin.php");
 	// }
 
-
-	$username = mysqli_real_escape_string($conn,$_POST['username']);
-	$password = mysqli_real_escape_string($conn,$_POST['password']);
-
-	$login = mysqli_query($conn, "SELECT * FROM user WHERE username = '{$username}' AND password = '{$password}'");
-
-	if (mysqli_num_rows($login) == 0) {
-		die("Username atau password salah!");
-	} else {
-		$_SESSION['admin'] = 1;
-		header("Location: admin.php");
-	}
-	
-
-	// $username = $_POST['username'];
-	// $password = $_POST['password'];
-	
-	// $login = mysqli_prepare($conn, "SELECT * FROM user WHERE username = ? AND password = ?");
-	// mysqli_stmt_bind_param($login, "ss",$_POST['username'],$_POST['password']);
-	// mysqli_execute($login);
-	// mysqli_stmt_store_result($login);
-
-	// if (mysqli_stmt_num_rows($login) == 0) {
-	// 	die("Username atau password salah!");
-	// } else {
-	// 	$_SESSION['admin'] = 1;
-	// 	header("Location: admin.php");
-	// }
-
-	
 }
 
 ?><!DOCTYPE html>
